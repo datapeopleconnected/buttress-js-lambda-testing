@@ -13,7 +13,10 @@ class PathMutationEditOrganisationName {
 	 * @return {Promise}
 	 */
 	async execute() {
-		if (!lambdaData.some((item) => item.values.some((v) => v === 'DPC LTD'))) return;
+		// The changes that triggered the run, as [{paths, values, schema}], are in the execution's CR metadata
+		const cr = lambdaExecution.metadata.find((m) => m.key === 'CR');
+		const changes = cr ? JSON.parse(cr.value) : [];
+		if (!changes.some((item) => item.values.some((v) => v === 'DPC LTD'))) return;
 
 		const organisations = await Buttress.getCollection('organisation').search({
 			name: {
